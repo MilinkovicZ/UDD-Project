@@ -1,11 +1,29 @@
 version: '3.8'
 name: law-udd
 services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    ports:
+      - "5401:5432"
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      db-net:
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xmx256m -Xms256m
+      - ELASTIC_PASSWORD=elastic
+      - xpack.security.enabled=false
+      - xpack.security.enrollment.enabled=false
     ports:
       - "9200:9200"
     volumes:
@@ -23,14 +41,21 @@ services:
   minio:
     image: minio/minio
     ports:
-      - "9003:9000"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
       - miniodata:/data
     environment:
       - MINIO_ROOT_USER=minioadmin
       - MINIO_ROOT_PASSWORD=minioadmin
-    command: server /data
+    command: server --console-address ":9001" /data
+
+networks:
+  db-net:
+    driver: bridge
+
 
 volumes:
   esdata:
   miniodata:
+  db-data:
