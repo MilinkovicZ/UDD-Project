@@ -1,6 +1,5 @@
 package com.udd.lawsearch.elastic.contract;
 
-import com.udd.lawsearch.shared.Address;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,9 +18,9 @@ public class ContractIndex {
     @Id
     private String id;
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian", store = true)
-    private String signatoryName;
+    private String signatoryPersonName;
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian", store = true)
-    private String signatoryLastName;
+    private String signatoryPersonSurname;
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian", store = true)
     private String governmentName;
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian", store = true)
@@ -31,9 +30,9 @@ public class ContractIndex {
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian")
     private String content;
 
-    public ContractIndex(String signatoryName, String signatoryLastName, String governmentName, String governmentLevel, String content) {
-        this.signatoryName = signatoryName;
-        this.signatoryLastName = signatoryLastName;
+    public ContractIndex(String signatoryPersonName, String signatoryPersonSurname, String governmentName, String governmentLevel, String content) {
+        this.signatoryPersonName = signatoryPersonName;
+        this.signatoryPersonSurname = signatoryPersonSurname;
         this.governmentName = governmentName;
         this.governmentLevel = governmentLevel;
         this.governmentAddress = new GeoPoint(30, 30);
