@@ -30,12 +30,12 @@ public class ContractIndex {
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian")
     private String content;
 
-    public ContractIndex(String signatoryPersonName, String signatoryPersonSurname, String governmentName, String governmentLevel, String content) {
+    public ContractIndex(String signatoryPersonName, String signatoryPersonSurname, String governmentName, String governmentLevel, String content, double lat, double lon) {
         this.signatoryPersonName = signatoryPersonName;
         this.signatoryPersonSurname = signatoryPersonSurname;
         this.governmentName = governmentName;
         this.governmentLevel = governmentLevel;
-        this.governmentAddress = new GeoPoint(30, 30);
+        this.governmentAddress = new GeoPoint(lat, lon);
         this.content = content;
     }
 }

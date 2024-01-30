@@ -20,7 +20,7 @@ public class ContractIndexServiceImpl implements ContractIndexService{
     @Value("${bucket-name}")
     private String bucketName;
     @Async
-    public void create(GovernmentDTO governmentDTO, String governmentTypeName) throws Exception {
+    public void create(GovernmentDTO governmentDTO, String governmentLevelName, double lat, double lon) throws Exception {
         String filename = governmentDTO.getContract().getOriginalFilename();
         InputStream stream = fileStorageService.getFileFromMilio(bucketName, filename);
         PdfContractData data = pdfService.getData(stream);
@@ -28,8 +28,10 @@ public class ContractIndexServiceImpl implements ContractIndexService{
                 data.getName(),
                 data.getLastName(),
                 governmentDTO.getUsername(),
-                governmentTypeName,
-                data.getContent()
+                governmentLevelName,
+                data.getContent(),
+                lat,
+                lon
         );
 
         contractIndexRepository.save(contractIndex);

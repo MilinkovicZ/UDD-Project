@@ -1,6 +1,7 @@
 package com.udd.lawsearch.elastic.search;
 
 import com.udd.lawsearch.elastic.search.dto.BasicSearchDTO;
+import com.udd.lawsearch.elastic.search.dto.LocationRequestDTO;
 import com.udd.lawsearch.elastic.search.dto.SearchResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,4 +22,9 @@ public class SearchController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/location")
+    public ResponseEntity<SearchResult> locationSearch(@RequestBody LocationRequestDTO dto) throws IOException {
+        SearchResult response = searchService.locationSearch(dto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
