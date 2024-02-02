@@ -9,13 +9,13 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.udd.lawsearch.elastic.search.dto.BasicSearchDTO;
-import com.udd.lawsearch.elastic.search.dto.LocationRequestDTO;
-import com.udd.lawsearch.elastic.search.dto.ResultData;
-import com.udd.lawsearch.elastic.search.dto.SearchResult;
+import com.udd.lawsearch.elastic.search.dto.*;
+import com.udd.lawsearch.elastic.search.result.ContractResultData;
+import com.udd.lawsearch.elastic.search.result.ContractSearchResult;
+import com.udd.lawsearch.elastic.search.result.LawResultData;
+import com.udd.lawsearch.elastic.search.result.LawSearchResult;
 import com.udd.lawsearch.shared.GeoLocationService;
 import lombok.RequiredArgsConstructor;
-import org.elasticsearch.xcontent.XContentType;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,8 +28,8 @@ import java.util.Objects;
 public class SearchServiceImpl implements SearchService{
     private final ElasticsearchClient esClient;
 
-    @Override
-    public SearchResult basicSearch(BasicSearchDTO dto) throws IOException, RuntimeException {
+    //region Contracts
+    public ContractSearchResult basicSearch(BasicSearchDTO dto) throws IOException {
         SearchResponse<ObjectNode> response = esClient.search(
                 SearchRequest.of(s -> s
                         .index("contracts")
@@ -57,16 +57,19 @@ public class SearchServiceImpl implements SearchService{
         return createResponse(hitsMetadata);
     }
 
-    public SearchResult locationSearch(LocationRequestDTO dto) throws IOException {
+    public ContractSearchResult locationSearch(LocationRequestDTO dto) throws IOException {
         var coordinates = GeoLocationService.getCoordinates(dto.getAddress());
 
         GeoDistanceQuery geoDistanceQuery = GeoDistanceQuery.of(g -> g
                 .field("governmentAddress")
                 .distance(dto.getRadius().intValue() + "km")
                 .location(GeoLocation.of(gl -> gl
-                        .latlon(ll -> ll
-                                .lat(coordinates.get(0))
-                                .lon(coordinates.get(1))
+                        .latlon(ll -> {
+                                    assert coordinates != null;
+                                    return ll
+                                            .lat(coordinates.get(0))
+                                            .lon(coordinates.get(1));
+                                }
                         )
                 ))
         );
@@ -88,12 +91,12 @@ public class SearchServiceImpl implements SearchService{
         return createResponse(hitsMetadata);
     }
 
-    private SearchResult createResponse(HitsMetadata<ObjectNode> hitsMetadata) {
-        List<ResultData> responses = new ArrayList<>();
+    private ContractSearchResult createResponse(HitsMetadata<ObjectNode> hitsMetadata) {
+        List<ContractResultData> responses = new ArrayList<>();
         List<Hit<ObjectNode>> searchHits = hitsMetadata.hits();
 
         for (Hit<ObjectNode> h: searchHits) {
-            ResultData searchResponse = new ResultData();
+            ContractResultData searchResponse = new ContractResultData();
             ObjectNode json = h.source();
             String name = Objects.requireNonNull(json).get("governmentName").asText();
             searchResponse.setGovernmentName(name);
@@ -111,6 +114,56 @@ public class SearchServiceImpl implements SearchService{
             responses.add(searchResponse);
         }
 
-        return new SearchResult(responses, Objects.requireNonNull(hitsMetadata.total()).value());
+        return new ContractSearchResult(responses, Objects.requireNonNull(hitsMetadata.total()).value());
     }
+    //endregion
+    //region Laws
+    public LawSearchResult lawSearch(String value) throws IOException {
+        SearchResponse<ObjectNode> response = esClient.search(
+                SearchRequest.of(s -> s
+                        .index("laws")
+                        .query(q -> q
+                                .match(t -> t
+                                        .field("content")
+                                        .query(value)
+                                )
+                        )
+                        .highlight(h -> h
+                                .fields("content", f -> f
+                                        .highlightQuery(hq -> hq
+                                                .match(mq -> mq
+                                                        .field("content")
+                                                        .query(value)
+                                                )
+                                        )
+                                )
+                        )
+                ),
+                ObjectNode.class
+        );
+
+        HitsMetadata<ObjectNode> hitsMetadata = response.hits();
+        List<Hit<ObjectNode>> searchHits = hitsMetadata.hits();
+        List<LawResultData> responses = new ArrayList<>();
+
+        for (Hit<ObjectNode> h: searchHits) {
+            LawResultData searchResponse = new LawResultData();
+            ObjectNode json = h.source();
+            assert json != null;
+            searchResponse.setContent(json.get("content").asText());
+
+            if (h.highlight().isEmpty()) {
+                searchResponse.setHighlight(json.get("content").asText().substring(0, 150) + "...");
+            } else {
+                searchResponse.setHighlight("..." + h.highlight().get("content").get(0) + "...");
+            }
+            searchResponse.setLawId(h.id());
+
+            responses.add(searchResponse);
+        }
+
+        return new LawSearchResult(responses, Objects.requireNonNull(hitsMetadata.total()).value());
+    }
+    //endregion
+
 }
