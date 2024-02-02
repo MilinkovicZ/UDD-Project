@@ -5,6 +5,8 @@ import com.udd.lawsearch.shared.FileStorageService;
 import com.udd.lawsearch.shared.PdfContractData;
 import com.udd.lawsearch.shared.PdfService;
 import lombok.RequiredArgsConstructor;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,6 @@ import java.util.List;
 public class LawIndexServiceImpl implements LawIndexService{
     private final LawIndexRepository lawIndexRepository;
     private final FileStorageService fileStorageService;
-    private final PdfService pdfService;
     @Value("${bucket-name}")
     private String bucketName;
 
@@ -27,11 +28,10 @@ public class LawIndexServiceImpl implements LawIndexService{
         for (MultipartFile law : laws) {
             String filename = law.getOriginalFilename();
             InputStream stream = fileStorageService.getFileFromMilio(bucketName, filename);
-            PdfContractData data = pdfService.getData(stream);
-            LawIndex lawIndex = new LawIndex(
-                    data.getContent()
-            );
-
+            PDDocument pdDocument = PDDocument.load(stream);
+            PDFTextStripper textStripper = new PDFTextStripper();
+            String text = textStripper.getText(pdDocument);
+            LawIndex lawIndex = new LawIndex(text);
             lawIndexRepository.save(lawIndex);
         }
     }

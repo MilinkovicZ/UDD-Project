@@ -37,7 +37,7 @@ public class GovernmentController {
         }
 
         contractIndexService.create(governmentDTO, government.getGovernmentLevel().getName(), government.getGovernmentAddress().getLatitude(), government.getGovernmentAddress().getLongitude());
-        //lawIndexService.create(governmentDTO.getLaw());
+        lawIndexService.create(governmentDTO.getLaw());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
