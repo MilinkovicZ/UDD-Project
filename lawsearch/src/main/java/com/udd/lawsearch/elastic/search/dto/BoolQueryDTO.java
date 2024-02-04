@@ -4,11 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BasicSearchDTO implements SearchCondition {
-    private String field;
-    private String value;
-    private Boolean isPhrase;
+public class BoolQueryDTO implements SearchCondition {
+    private String operator;
+    List<SearchConditionWrapper> booleanQueryFields;
 }

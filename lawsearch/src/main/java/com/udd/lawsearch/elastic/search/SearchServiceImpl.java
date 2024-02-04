@@ -18,6 +18,7 @@ import com.udd.lawsearch.shared.GeoLocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.naming.directory.SearchResult;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,66 @@ public class SearchServiceImpl implements SearchService{
 
         HitsMetadata<ObjectNode> hitsMetadata = searchResponse.hits();
         return createResponse(hitsMetadata);
+    }
+
+    public ContractSearchResult advancedSearch(SearchCondition condition) throws IOException {
+        Query query = buildQuery(condition);
+
+        SearchResponse<ObjectNode> response = esClient.search(
+                SearchRequest.of(s -> s
+                        .index("contracts")
+                        .query(query)
+                        .highlight(h -> h
+                                .fields("content", f -> f)
+                        )
+                ),
+                ObjectNode.class
+        );
+
+        HitsMetadata<ObjectNode> hitsMetadata = response.hits();
+        return createResponse(hitsMetadata);
+    }
+
+    private Query buildQuery(SearchCondition condition) {
+        if (condition instanceof BasicSearchDTO simpleCondition) {
+            if (((BasicSearchDTO) condition).getIsPhrase())
+            {
+                return Query.of(q -> q
+                        .matchPhrase(m -> m
+                                .field(simpleCondition.getField())
+                                .query(simpleCondition.getValue())
+                        )
+                );
+            }
+            return Query.of(q -> q
+                    .match(m -> m
+                            .field(simpleCondition.getField())
+                            .query(simpleCondition.getValue())
+                    )
+            );
+        } else if (condition instanceof BoolQueryDTO booleanCondition) {
+            List<Query> innerQueries = new ArrayList<>();
+            for (SearchConditionWrapper innerConditionWrapper : booleanCondition.getBooleanQueryFields()) {
+                innerQueries.add(buildQuery(innerConditionWrapper.getCondition()));
+            }
+
+            switch (booleanCondition.getOperator().toUpperCase()) {
+                case "AND":
+                    return Query.of(q -> q.bool(b -> b.must(innerQueries)));
+                case "OR":
+                    return Query.of(q -> q.bool(b -> b.should(innerQueries).minimumShouldMatch("1")));
+                case "NOT":
+                    if (innerQueries.size() == 1) {
+                        return Query.of(q -> q.bool(b -> b.mustNot(innerQueries.get(0))));
+                    } else {
+                        throw new IllegalArgumentException("NOT operator should have only one condition");
+                    }
+                default:
+                    throw new IllegalArgumentException("Unsupported operator: " + booleanCondition.getOperator());
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown condition type: " + condition.getClass().getName());
+        }
     }
 
     private ContractSearchResult createResponse(HitsMetadata<ObjectNode> hitsMetadata) {
