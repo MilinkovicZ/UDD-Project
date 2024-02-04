@@ -164,6 +164,7 @@ public class SearchServiceImpl implements SearchService{
             searchResponse.setGovernmentLevel(json.get("governmentLevel").asText());
             searchResponse.setSignatoryPersonName(json.get("signatoryPersonName").asText());
             searchResponse.setSignatoryPersonSurname(json.get("signatoryPersonSurname").asText());
+            searchResponse.setFilename(json.get("filename").asText());
 
             if (h.highlight().isEmpty()) {
                 searchResponse.setHighlight(json.get("content").asText().substring(0, 150) + "...");
@@ -211,7 +212,7 @@ public class SearchServiceImpl implements SearchService{
             LawResultData searchResponse = new LawResultData();
             ObjectNode json = h.source();
             assert json != null;
-            searchResponse.setContent(json.get("content").asText());
+            searchResponse.setFilename(json.get("filename").asText());
 
             if (h.highlight().isEmpty()) {
                 searchResponse.setHighlight(json.get("content").asText().substring(0, 150) + "...");

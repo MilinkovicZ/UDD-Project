@@ -31,7 +31,7 @@ public class LawIndexServiceImpl implements LawIndexService{
             PDDocument pdDocument = PDDocument.load(stream);
             PDFTextStripper textStripper = new PDFTextStripper();
             String text = textStripper.getText(pdDocument);
-            LawIndex lawIndex = new LawIndex(text);
+            LawIndex lawIndex = new LawIndex(text, filename);
             lawIndexRepository.save(lawIndex);
         }
     }

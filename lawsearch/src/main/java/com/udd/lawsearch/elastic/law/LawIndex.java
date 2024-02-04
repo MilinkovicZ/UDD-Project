@@ -19,8 +19,11 @@ public class LawIndex {
     private String id;
     @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian")
     private String content;
+    @Field(type = FieldType.Text, searchAnalyzer = "serbian", analyzer = "serbian")
+    private String filename;
 
-    public LawIndex(String content) {
+    public LawIndex(String content, String filename) {
         this.content = content;
+        this.filename = filename;
     }
 }

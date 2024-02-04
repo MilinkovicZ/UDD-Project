@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class LawResultData {
-    private String content;
     private String highlight;
     private String lawId;
+    private String filename;
 }

@@ -34,7 +34,8 @@ public class ContractIndexServiceImpl implements ContractIndexService{
                 data.getGovernmentLevel(),
                 data.getContent(),
                 coordinates.get(0),
-                coordinates.get(1)
+                coordinates.get(1),
+                filename
         );
 
         contractIndexRepository.save(contractIndex);
