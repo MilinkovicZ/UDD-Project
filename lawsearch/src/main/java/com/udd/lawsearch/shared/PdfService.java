@@ -13,39 +13,70 @@ public class PdfService {
         try (PDDocument pdDocument = PDDocument.load(stream)) {
             PDFTextStripper textStripper = new PDFTextStripper();
             String text = textStripper.getText(pdDocument);
-            return extractPersonInfo(text);
+            return extractKeyData(text);
         } catch (IOException e) {
             System.out.println("Error while converting document!");
         }
         return  null;
     }
 
-    private PdfContractData extractPersonInfo(String content) {
-        int index = content.indexOf("Potpisnik ugovora za klijenta");
+    private PdfContractData extractKeyData(String content) {
+        PdfContractData data = new PdfContractData();
+        int govIndex = content.indexOf("Uprava za");
 
-        if (index != -1) {
-            int endIndex = index - 4;
-            String ime = null;
-            String prezime = null;
+        String governmentName = null;
+        String governmentLevel = null;
+        String governmentAddress = null;
+        String signatoryFirstName = null;
+        String signatoryLastName = null;
+
+        if (govIndex != -1) {
+            int count = 0;
+
+            for (int i = govIndex; i < content.length(); i++) {
+                if (content.charAt(i) == '<') {
+                    int endIndex = content.indexOf('>', i);
+                    if (endIndex != -1) {
+                        String dataBetweenTags = content.substring(i + 1, endIndex);
+                        count++;
+                        switch (count) {
+                            case 1:
+                                governmentName = dataBetweenTags;
+                                break;
+                            case 2:
+                                governmentLevel = dataBetweenTags;
+                                break;
+                            case 3:
+                                governmentAddress = dataBetweenTags;
+                                break;
+                        }
+                        i = endIndex;
+                    }
+                }
+                if (count == 3) break;
+            }
+        }
+
+        govIndex = content.indexOf("Potpisnik ugovora za klijenta");
+
+        if (govIndex != -1) {
+            int endIndex = govIndex - 4;
             boolean foundLastName = false;
 
-            for (int i = index; i >= 0; i--){
+            for (int i = govIndex; i >= 0; i--) {
                 if (content.charAt(i) == '<') {
                     if (!foundLastName) {
-                        prezime = content.substring(i + 1, endIndex);
+                        signatoryLastName = content.substring(i + 1, endIndex);
                         endIndex = i - 2;
                         foundLastName = true;
                     } else {
-                        ime = content.substring(i + 1, endIndex);
+                        signatoryFirstName = content.substring(i + 1, endIndex);
                         break;
                     }
                 }
             }
-
-            if (ime != null) {
-                return new PdfContractData(ime, prezime, content);
-            }
         }
-        return null;
+
+        return new PdfContractData(signatoryFirstName, signatoryLastName, governmentName, governmentLevel, governmentAddress, content);
     }
 }

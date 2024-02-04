@@ -36,7 +36,7 @@ public class GovernmentController {
             fileStorageService.uploadFile(file);
         }
 
-        contractIndexService.create(governmentDTO, government.getGovernmentLevel().getName(), government.getGovernmentAddress().getLatitude(), government.getGovernmentAddress().getLongitude());
+        contractIndexService.create(governmentDTO.getContract().getOriginalFilename());
         lawIndexService.create(governmentDTO.getLaw());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

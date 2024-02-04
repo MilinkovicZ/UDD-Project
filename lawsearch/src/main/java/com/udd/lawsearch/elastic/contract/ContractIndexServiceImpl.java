@@ -2,6 +2,7 @@ package com.udd.lawsearch.elastic.contract;
 
 import com.udd.lawsearch.government.dto.GovernmentDTO;
 import com.udd.lawsearch.shared.FileStorageService;
+import com.udd.lawsearch.shared.GeoLocationService;
 import com.udd.lawsearch.shared.PdfContractData;
 import com.udd.lawsearch.shared.PdfService;
 import lombok.RequiredArgsConstructor;
@@ -16,22 +17,24 @@ import java.io.InputStream;
 public class ContractIndexServiceImpl implements ContractIndexService{
     private final ContractIndexRepository contractIndexRepository;
     private final FileStorageService fileStorageService;
+    private final GeoLocationService geoLocationService;
     private final PdfService pdfService;
     @Value("${bucket-name}")
     private String bucketName;
     @Async
-    public void create(GovernmentDTO governmentDTO, String governmentLevelName, double lat, double lon) throws Exception {
-        String filename = governmentDTO.getContract().getOriginalFilename();
+    public void create(String filename) throws Exception {
         InputStream stream = fileStorageService.getFileFromMilio(bucketName, filename);
         PdfContractData data = pdfService.getData(stream);
+        var coordinates = GeoLocationService.getCoordinates(data.getGovernmentAddress());
+        assert coordinates != null;
         ContractIndex contractIndex = new ContractIndex(
                 data.getName(),
                 data.getLastName(),
-                governmentDTO.getUsername(),
-                governmentLevelName,
+                data.getGovernmentName(),
+                data.getGovernmentLevel(),
                 data.getContent(),
-                lat,
-                lon
+                coordinates.get(0),
+                coordinates.get(1)
         );
 
         contractIndexRepository.save(contractIndex);

@@ -10,5 +10,8 @@ import lombok.NoArgsConstructor;
 public class PdfContractData {
     private String name;
     private String lastName;
+    private String governmentName;
+    private String governmentLevel;
+    private String governmentAddress;
     private String content;
 }
