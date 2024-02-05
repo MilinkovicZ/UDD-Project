@@ -3,7 +3,6 @@ const baseURL = process.env.REACT_APP_BASE_URL;
 
 const searchContracts = async (query) => {
   try {
-    console.log(query);
     const response = await axios.post(
       `${baseURL}search/contract/advanced`,
       query,
@@ -68,9 +67,26 @@ const uploadDocuments = async (uploadData) => {
 
 const downloadDocument = async (objectName) => {
   try {
-    const downloadUrl = `${baseURL}download/${objectName}`;
-    window.open(downloadUrl, "_blank");
-    return true;
+    const response = await axios.get(
+      `${baseURL}documents/download/${objectName}`,
+      {
+        responseType: "blob",
+      }
+    );
+
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = objectName;
+    document.body.appendChild(a);
+    a.click();
+
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    alert("Successfully downloaded!");
   } catch (error) {
     console.error("Error downloading document:", error);
     throw error;

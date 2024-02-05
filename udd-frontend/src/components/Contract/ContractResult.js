@@ -10,8 +10,11 @@ import { downloadDocument } from "../../services/SearchService";
 
 export default function ContractResult({ result }) {
     const handleDownload = async (filename) => {
-        await downloadDocument(filename);
-        alert("Successfully downloaded!");
+        try {
+            await downloadDocument(filename);
+          } catch (error) {
+            console.error('Download error:', error);
+          }
     };
 
     return (
