@@ -3,6 +3,7 @@ import ContractSearch from "./ContractSearch";
 import React from "react";
 import { useState, useRef } from "react";
 import parseFilters from "../../services/QueryParserService";
+import { searchContracts } from "../../services/SearchService";
 
 export default function ContractPage() {
     const contractSearchRefs = useRef([]);
@@ -56,8 +57,8 @@ export default function ContractPage() {
         });      
             
         let query = parseFilters(filters)
-        console.log(query);
-        //pozovi advanced search iz servisa i vrati rezultate.   
+        const results = searchContracts(query);
+        console.log(results);
     };
 
     return (

@@ -43,6 +43,7 @@ const searchLaws = async (lawData) => {
 };
 
 const uploadDocuments = async (uploadData) => {
+    console.log(uploadData);
     try {
         const formData = new FormData();
         formData.append("contract", uploadData.contract);
@@ -51,7 +52,7 @@ const uploadDocuments = async (uploadData) => {
             formData.append(`laws[${index}]`, lawFile);
         });
 
-        const response = await axios.post(
+        await axios.post(
             `${baseURL}documents/upload`,
             formData,
             {
@@ -59,9 +60,7 @@ const uploadDocuments = async (uploadData) => {
                     "Content-Type": "multipart/form-data",
                 },
             }
-        );
-
-        return response.data;
+        );        
     } catch (error) {
         console.error("Error uploading documents:", error);
         throw error;
