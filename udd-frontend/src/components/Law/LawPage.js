@@ -15,7 +15,8 @@ export default function LawPage() {
 
     const handleOnSearch = () => {
         if (!inputValue.trim()) {
-            setInputValue("");
+            setInputValue("");            
+            alert('Content is required!');
             return;
         }
         

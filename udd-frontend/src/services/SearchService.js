@@ -1,14 +1,9 @@
 import axios from "axios";
 const baseURL = process.env.REACT_APP_BASE_URL;
 
-const searchContracts = async (searchQuery) => {
+const searchContracts = async (query) => {
     try {
-        const response = await axios.post(
-            `${baseURL}search/contract/advanced`,
-            {
-                searchQuery: searchQuery,
-            }
-        );
+        const response = await axios.post(`${baseURL}search/contract/advanced`, query);
 
         return response.data;
     } catch (error) {
@@ -31,9 +26,9 @@ const searchContractsByLocation = async (locationData) => {
     }
 };
 
-const searchLaws = async (lawData) => {
+const searchLaws = async (value) => {
     try {
-        const response = await axios.post(`${baseURL}search/law`, lawData);
+        const response = await axios.post(`${baseURL}search/law`, value);
 
         return response.data;
     } catch (error) {
@@ -43,7 +38,6 @@ const searchLaws = async (lawData) => {
 };
 
 const uploadDocuments = async (uploadData) => {
-    console.log(uploadData);
     try {
         const formData = new FormData();
         formData.append("contract", uploadData.contract);
