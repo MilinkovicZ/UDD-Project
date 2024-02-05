@@ -21,16 +21,21 @@ export default function LawResult({ result }) {
                 color: "#cccccc",
                 margin: "20px",
                 width: "300px",
+                height: "250px",
                 display: "inline-block",
                 verticalAlign: "top",
             }}
         >
             <CardContent>
+                <Typography variant="h6" style={{ marginTop: "10px" }}>
+                    Filename: {result.filename}
+                </Typography>
                 <Typography variant="body1" style={{ marginTop: "10px" }}>
                     Highlight: {result.highlight}
                 </Typography>
             </CardContent>
-            <CardActions>
+            <CardActions style={{display: "flex",
+                flexDirection: "column", marginTop: "auto" }}>
                 <Button
                     variant="contained"
                     style={{ background: "#00008b" }}

@@ -21,6 +21,7 @@ export default function ContractResult({ result }) {
                 color: "#cccccc",
                 margin: "20px",
                 width: "300px",
+                height: "360px",
                 display: "inline-block",
                 verticalAlign: "top",
             }}
@@ -28,6 +29,9 @@ export default function ContractResult({ result }) {
             <CardContent>
                 <Typography variant="h6" gutterBottom>
                     {result.governmentName}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                    {result.filename}
                 </Typography>
                 <Typography variant="body2" color="#cccccc" gutterBottom>
                     Government Level: {result.governmentLevel}

@@ -68,7 +68,7 @@ const ContractSearch = forwardRef(({ onAdd, onOr, index }, ref) => {
                         Signatory Person LastName
                     </MenuItem>
                     <MenuItem value="governmentName">Government Name</MenuItem>
-                    <MenuItem value="governmentLevel">Government Type</MenuItem>
+                    <MenuItem value="governmentLevel">Government Level</MenuItem>
                     <MenuItem value="content">Content</MenuItem>
                 </Select>
             </FormControl>

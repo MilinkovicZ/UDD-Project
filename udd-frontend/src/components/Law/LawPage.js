@@ -15,24 +15,14 @@ export default function LawPage() {
     const [inputValue, setInputValue] = useState("");
     const [results, setResults] = useState([]);
 
-    const handleOnSearch = () => {
+    const handleOnSearch = async () => {
         if (!inputValue.trim()) {
             setInputValue("");
             return;
         }
 
-        const response = searchLaws(inputValue);
-        // const response = [
-        //     {
-        //         highlight: "Test Highlight",
-        //         filename: "test_contract.pdf",
-        //     },
-        //     {
-        //         highlight: "Test Highlight",
-        //         filename: "test_contract.pdf",
-        //     }
-        // ];
-        setResults(response);
+        const response = await searchLaws(inputValue);
+        setResults(response.results);
     };
 
     return (

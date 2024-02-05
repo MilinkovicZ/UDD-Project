@@ -17,7 +17,7 @@ export default function ContractLocation() {
     const [radius, setRadius] = useState("");
     const [results, setResults] = useState([]);
 
-    const handleOnSearch = () => {
+    const handleOnSearch = async () => {
         if (!radius.trim() || radius <= 0 || !address.trim()) {
             setRadius("");
             setAddress("");
@@ -29,8 +29,8 @@ export default function ContractLocation() {
             radius: radius
         }
 
-        const response = searchContractsByLocation(locationData);
-        setResults(response);
+        const response = await searchContractsByLocation(locationData);
+        setResults(response.results);
     };
 
     return (

@@ -44,7 +44,7 @@ export default function ContractPage() {
         contractSearchRefs.current.push(React.createRef());
     };
 
-    const handleOnSearch = () => {
+    const handleOnSearch = async () => {
         contractSearchRefs.current.forEach((contractSearchRef, index) => {
             const currentValues = contractSearchRef.getCurrentValues();
             const filterToUpdate = filters.find(
@@ -62,16 +62,8 @@ export default function ContractPage() {
         });
 
         let query = parseFilters(filters);
-        const response = searchContracts(query);
-        // const response = [{ 
-        //     governmentName: "Test Government", 
-        //     governmentLevel: "Local", 
-        //     signatoryPersonName: "John", 
-        //     signatoryPersonSurname: "Doe", 
-        //     highlight: "Test Highlight", 
-        //     filename: "test_contract.pdf" 
-        // }]; 
-        setResults(response);
+        const response = await searchContracts(query);        
+        setResults(response.results);
     };
 
     return (

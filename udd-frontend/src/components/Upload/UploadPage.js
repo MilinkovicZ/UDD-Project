@@ -23,7 +23,7 @@ const UploadPage = () => {
         setLawFiles(Array.from(files));
     };
 
-    const handleUpload = () => {
+    const handleUpload = async () => {
         if (!contractFile) {
             alert("Contract file is required.");
             return;
@@ -34,10 +34,13 @@ const UploadPage = () => {
             return;
         }
 
-        uploadDocuments({
+        await uploadDocuments({
             contract: contractFile,
             laws: lawFiles,
         });
+
+        alert('Successfully added new documents!');
+        window.location.reload();
     };
 
     return (
