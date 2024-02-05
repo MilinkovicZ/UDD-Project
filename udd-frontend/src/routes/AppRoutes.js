@@ -1,8 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import ContractPage from "../Contract/ContractPage";
-import LawPage from "../Law/LawPage";
-import UploadPage from "../Upload/UploadPage";
+import ContractPage from "../components/Contract/ContractPage";
+import LawPage from "../components/Law/LawPage";
+import UploadPage from "../components/Upload/UploadPage";
 
 const AppRoutes = () => {
     return (

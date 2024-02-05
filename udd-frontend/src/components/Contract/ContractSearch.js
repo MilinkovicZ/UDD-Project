@@ -9,20 +9,22 @@ import {
     Button,
     Checkbox,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, forwardRef, useImperativeHandle } from "react";
 
-export default function ContractSearch({onAdd, onOr, index}) {
+const ContractSearch = forwardRef(({ onAdd, onOr, index }, ref) => {
     const [currentField, setCurrentField] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [isPhrase, setIsPhrase] = useState(false);
     const [isNotOperator, setIsNotOperator] = useState(false);
 
-    const getCurrentValues = () => ({
-        currentField,
-        currentValue: inputValue,
-        isPhrase,
-        isNotOperator,
-    });
+    useImperativeHandle(ref, () => ({
+        getCurrentValues: () => ({
+          currentField,
+          currentValue: inputValue,
+          isPhrase,
+          isNotOperator,
+        }),
+      }));
 
     const onSelectionChange = (event) => {
         setCurrentField(event.target.value);
@@ -141,4 +143,6 @@ export default function ContractSearch({onAdd, onOr, index}) {
             </FormControl>
         </Container>
     );
-}
+});
+
+export default ContractSearch;

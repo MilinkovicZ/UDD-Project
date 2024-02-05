@@ -1,8 +1,11 @@
 import { Typography, Container, Button, Box } from "@mui/material";
 import ContractSearch from "./ContractSearch";
-import { useState } from "react";
+import React from "react";
+import { useState, useRef } from "react";
+import parseFilters from "../../services/QueryParserService";
 
 export default function ContractPage() {
+    const contractSearchRefs = useRef([]);
     const [filters, setFilters] = useState([
         {
             operator: "",
@@ -34,6 +37,27 @@ export default function ContractPage() {
                 id: prevFilters.length,
             },
         ]);
+        contractSearchRefs.current.push(React.createRef());
+    };    
+
+    const handleOnSearch = () => {
+        contractSearchRefs.current.forEach((contractSearchRef, index) => {
+            const currentValues = contractSearchRef.getCurrentValues();
+            const filterToUpdate = filters.find((filter) => filter.id === index);
+
+            if (filterToUpdate) {
+                filterToUpdate.field = currentValues.currentField;
+                filterToUpdate.value = currentValues.currentValue;
+                filterToUpdate.isPhrase = currentValues.isPhrase;
+                filterToUpdate.isNot = currentValues.isNotOperator;
+            } else {
+                console.warn(`No filter found with id ${index}`);
+            }
+        });      
+            
+        let query = parseFilters(filters)
+        console.log(query);
+        //pozovi advanced search iz servisa i vrati rezultate.   
     };
 
     return (
@@ -66,11 +90,13 @@ export default function ContractPage() {
                         index={index}
                         onAdd={onAndClick}
                         onOr={onOrClick}
+                        ref={(ref) => (contractSearchRefs.current[index] = ref)}
                     />
                 </Box>
             ))}
             <Button
                 variant="contained"
+                onClick={handleOnSearch}
                 style={{
                     backgroundColor: "#00008b",
                     color: "#f0f0f0",

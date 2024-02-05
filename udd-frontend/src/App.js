@@ -1,6 +1,6 @@
 import React from "react";
 import NavBar from "./components/NavBar/NavBar";
-import AppRoutes from "./components/routes/AppRoutes";
+import AppRoutes from "./routes/AppRoutes";
 import { Box } from "@mui/material";
 
 function App() {
