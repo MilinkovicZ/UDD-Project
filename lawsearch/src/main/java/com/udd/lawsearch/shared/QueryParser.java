@@ -20,7 +20,13 @@ public class QueryParser {
             return parseBooleanQuery("OR", query.split(" OR "));
         } else if (query.contains(" AND ")) {
             return parseBooleanQuery("AND", query.split(" AND "));
-        } else if (query.startsWith(" NOT ")) {
+        } else {
+            return parseBasicOrNotQuery(query);
+        }
+    }
+
+    private SearchConditionWrapper parseBasicOrNotQuery(String query) {
+        if (query.startsWith("NOT ")) {
             return parseNotQuery(query.substring(4));
         } else {
             return parseBasicSearch(query);
