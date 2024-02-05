@@ -1,12 +1,17 @@
 import React from "react";
-import NavBar from "./components/NavBar/NavBar.js";
+import NavBar from "./components/NavBar/NavBar";
+import AppRoutes from "./components/routes/AppRoutes";
+import { Box } from "@mui/material";
 
 function App() {
-  return (
-    <React.Fragment>
-      <NavBar/>
-    </React.Fragment>
-  );
+    return (
+        <React.Fragment>
+            <Box sx={{ backgroundColor: "#375573", minHeight: "100vh" }}>
+                <NavBar />
+                <AppRoutes />
+            </Box>
+        </React.Fragment>
+    );
 }
 
 export default App;
