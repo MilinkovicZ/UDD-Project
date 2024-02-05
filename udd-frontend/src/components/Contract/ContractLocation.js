@@ -10,16 +10,17 @@ import {
 } from "@mui/material";
 import { searchContractsByLocation } from "../../services/SearchService";
 import { Link } from "react-router-dom";
+import ContractResult from "../Contract/ContractResult";
 
-export default function LawPage() {
+export default function ContractLocation() {
     const [address, setAddress] = useState("");
     const [radius, setRadius] = useState("");
+    const [results, setResults] = useState([]);
 
     const handleOnSearch = () => {
         if (!radius.trim() || radius <= 0 || !address.trim()) {
             setRadius("");
             setAddress("");
-            alert('Address is required!');
             return;
         }
         
@@ -28,8 +29,8 @@ export default function LawPage() {
             radius: radius
         }
 
-       const results = searchContractsByLocation(locationData);
-       console.log(results);
+        const response = searchContractsByLocation(locationData);
+        setResults(response);
     };
 
     return (
@@ -116,6 +117,21 @@ export default function LawPage() {
                     Search
                 </Button>
             </Grid>
+            {results.length > 0 && (
+                <>
+                    <Typography
+                        variant="h3"
+                        align="left"
+                        gutterBottom
+                        style={{ color: "#00008b" }}
+                    >
+                        Results
+                    </Typography>
+                    {results.map((result, index) => (
+                        <ContractResult key={index} result={result} />
+                    ))}
+                </>
+            )}
         </Container>
     );
 }

@@ -5,6 +5,7 @@ import React from "react";
 import { useState, useRef } from "react";
 import parseFilters from "../../services/QueryParserService";
 import { searchContracts } from "../../services/SearchService";
+import ContractResult from "../Contract/ContractResult";
 
 export default function ContractPage() {
     const contractSearchRefs = useRef([]);
@@ -18,6 +19,7 @@ export default function ContractPage() {
             id: 0,
         },
     ]);
+    const [results, setResults] = useState([]);
 
     const onAndClick = () => {
         addFilter("AND");
@@ -60,8 +62,16 @@ export default function ContractPage() {
         });
 
         let query = parseFilters(filters);
-        const results = searchContracts(query);
-        console.log(results);
+        const response = searchContracts(query);
+        // const response = [{ 
+        //     governmentName: "Test Government", 
+        //     governmentLevel: "Local", 
+        //     signatoryPersonName: "John", 
+        //     signatoryPersonSurname: "Doe", 
+        //     highlight: "Test Highlight", 
+        //     filename: "test_contract.pdf" 
+        // }]; 
+        setResults(response);
     };
 
     return (
@@ -92,7 +102,7 @@ export default function ContractPage() {
                     style={{
                         backgroundColor: "#141e30",
                         color: "#f0f0f0",
-                        height: "40px"
+                        height: "40px",
                     }}
                 >
                     Location
@@ -133,6 +143,21 @@ export default function ContractPage() {
             >
                 Search
             </Button>
+            {results.length > 0 && (
+                <>
+                    <Typography
+                        variant="h3"
+                        align="left"
+                        gutterBottom
+                        style={{ color: "#00008b", marginLeft: "20px" }}
+                    >
+                        Results
+                    </Typography>
+                    {results.map((result, index) => (
+                        <ContractResult key={index} result={result}/>
+                    ))}
+                </>
+            )}
         </Container>
     );
 }

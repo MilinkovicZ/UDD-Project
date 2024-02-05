@@ -6,22 +6,33 @@ import {
     FormControl,
     InputLabel,
     OutlinedInput,
-    Grid
+    Grid,
 } from "@mui/material";
 import { searchLaws } from "../../services/SearchService";
+import LawResult from "./LawResult";
 
 export default function LawPage() {
     const [inputValue, setInputValue] = useState("");
+    const [results, setResults] = useState([]);
 
     const handleOnSearch = () => {
         if (!inputValue.trim()) {
-            setInputValue("");            
-            alert('Content is required!');
+            setInputValue("");
             return;
         }
-        
-       const results = searchLaws(inputValue);
-       console.log(results);
+
+        const response = searchLaws(inputValue);
+        // const response = [
+        //     {
+        //         highlight: "Test Highlight",
+        //         filename: "test_contract.pdf",
+        //     },
+        //     {
+        //         highlight: "Test Highlight",
+        //         filename: "test_contract.pdf",
+        //     }
+        // ];
+        setResults(response);
     };
 
     return (
@@ -53,10 +64,7 @@ export default function LawPage() {
                 />
             </FormControl>
 
-            <Grid
-                container
-                style={{ marginTop: "20px" }}
-            >
+            <Grid container style={{ marginTop: "20px" }}>
                 <Button
                     variant="contained"
                     onClick={handleOnSearch}
@@ -65,12 +73,27 @@ export default function LawPage() {
                         color: "#f0f0f0",
                         borderRadius: "50px",
                         padding: "15px 30px",
-                        marginLeft: "23%"
+                        marginLeft: "23%",
                     }}
                 >
                     Search
                 </Button>
             </Grid>
+            {results.length > 0 && (
+                <>
+                    <Typography
+                        variant="h3"
+                        align="left"
+                        gutterBottom
+                        style={{ color: "#00008b", marginLeft: "20px" }}
+                    >
+                        Results
+                    </Typography>
+                    {results.map((result, index) => (
+                        <LawResult key={index} result={result} />
+                    ))}
+                </>
+            )}
         </Container>
     );
 }
